@@ -3,6 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Navbar from "react-bootstrap/Navbar";
 import Container from "react-bootstrap/Container";
 import axios from "axios";
+import Image from 'react-bootstrap/Image';
 
 class App extends React.Component {
   constructor(props){
@@ -11,7 +12,8 @@ class App extends React.Component {
       lon:'',
       lat:'',
       display_name:'',
-      disPlayError: false
+      disPlayError: false,
+      mapDisplay:false
     }
   }
 
@@ -20,13 +22,15 @@ class App extends React.Component {
     let CityName=event.target.cityName.value;
     let Key="pk.187e19748e6b7d412b6f784bf36db13e"
     let URL=`https://eu1.locationiq.com/v1/search.php?key=${Key}&q=${CityName}&format=json`
+    
 
     try{
     let Data= await axios.get(URL);
     this.setState({
       lon:Data.data[0].lon,
       lat:Data.data[0].lat,
-      display_name:Data.data[0].display_name
+      display_name:Data.data[0].display_name,
+      mapDisplay:true
     
     })
     }
@@ -43,11 +47,17 @@ class App extends React.Component {
     
 
     const FormStyle = {
-      paddingTop:'15%',
+      paddingTop:'8%',
       paddingLeft:'3%',
       paddingRight:'3%',
       paddingBottom:'3rem'
     };
+    const MapStyling={
+      width: '40%',
+      display:'block',
+      marginLeft:'auto',
+      marginRight:'auto'
+    }
     const Pstyle={
       paddingLeft:'4.5%',
     }
@@ -78,10 +88,20 @@ class App extends React.Component {
       backgroundColor:'#4CAF50',
       color:'white'
     }
-    const divStyle={
+    const formColorStyle={
       borderRadius:'5px',
       backgroundColor:'#f2f2f2',
       padding:'20px'
+    }
+    const errorStyle={
+      textAlign:'center',
+      fontSize:'5rem'
+    }
+    const dataStyle={
+      borderRadius:'5px',
+      backgroundColor:'#f2f2f2',
+      padding:'20px',
+      margin:'0 75% 0 5%'
     }
     return (
       <>
@@ -91,16 +111,19 @@ class App extends React.Component {
           </Container>
         </Navbar>
         <form style={FormStyle} onSubmit={this.getCityData}>
-        <div style={divStyle}>
+        <div style={formColorStyle}>
           <label>City Name: </label>
           <input style={borderStyle} style={inputStyle} name='cityName' placeholder='Enter city name'></input>
           <button style={borderStyle} type='submit' style={SubmitStyle}>Explore!</button>
         </div>
         </form>
-        <p style={Pstyle}>City name: {this.state.display_name}</p>
-        <p style={Pstyle}>Latitude: {this.state.lat}</p>
-        <p style={Pstyle}>Longitude:  {this.state.lon}</p>
-        {this.state.disPlayError && <p style={Pstyle}>Sorry Error</p>}
+        <div style={dataStyle}>
+        <p style={Pstyle}>City name:&nbsp;&nbsp;&nbsp;&nbsp;{this.state.display_name}</p>
+        <p style={Pstyle}>Latitude:&nbsp;&nbsp;&nbsp;&nbsp;{this.state.lat}</p>
+        <p style={Pstyle}>Longitude:&nbsp;&nbsp;&nbsp;&nbsp;{this.state.lon}</p>
+        </div>
+        {this.state.disPlayError && <p style={errorStyle}>Sorry Error</p>}
+        {this.state.mapDisplay && <Image style={MapStyling} src={`https://maps.locationiq.com/v3/staticmap?key=pk.187e19748e6b7d412b6f784bf36db13e&center=${this.state.lat},${this.state.lon}&zoom=${1-18}`} alt='map' fluid />}
       </>
     );
   }
