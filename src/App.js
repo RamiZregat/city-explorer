@@ -24,7 +24,7 @@ class App extends React.Component {
     }
   }
   getWeatherData=async(CityName)=>{
-    let WeatherURL=`http://localhost:3010/weather?cityname=${CityName}`;
+    let WeatherURL=`https://rami-city-explorer.herokuapp.com/weather?cityname=${CityName}`;
 
     try{
       if(CityName==='Amman'||CityName==='Paris'||CityName==='Seattle'){
