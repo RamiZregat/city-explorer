@@ -4,6 +4,11 @@ import Navbar from "react-bootstrap/Navbar";
 import Container from "react-bootstrap/Container";
 import axios from "axios";
 import Image from 'react-bootstrap/Image';
+import Card from'react-bootstrap/Card';
+import ListGroup from'react-bootstrap/ListGroup';
+import ListGroupItem from'react-bootstrap/ListGroupItem';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
 class App extends React.Component {
   constructor(props){
@@ -16,11 +21,14 @@ class App extends React.Component {
       mapDisplay:false,
       Weather:false,
       disPlayWeatherError:false,
-      weatherArray:[]
+      weatherArray:[],
+      disPlayMoviesError:false,
+      moviesDataArray:[],
+      Movies:false,
     }
   }
   getWeatherData=async(lat,lon)=>{
-    let WeatherURL=`https://rami-city-explorer.herokuapp.com/weather?lat=${lat}&lon=${lon}`;
+    let WeatherURL=`http://localhost:3010/weather?lat=${lat}&lon=${lon}`;
 
     try{
       
@@ -30,6 +38,7 @@ class App extends React.Component {
         weatherArray:WeatherData.data,
         Weather:true
       })
+      
     }
     catch{
       this.setState({
@@ -38,9 +47,10 @@ class App extends React.Component {
     }
   }
 
-  getCityData=async(event)=>{ 
-    event.preventDefault();
-    let CityName=event.target.cityName.value;
+  getCityData=async(CityName)=>{ 
+
+ 
+    
     let Key=process.env.REACT_APP_Key;
     let URL=`https://eu1.locationiq.com/v1/search.php?key=${Key}&q=${CityName}&format=json`;
     
@@ -53,11 +63,11 @@ class App extends React.Component {
       lon:Data.data[0].lon,
       lat:Data.data[0].lat,
       display_name:Data.data[0].display_name,
-      mapDisplay:true
+      mapDisplay:true,
     
     })
+  
     this.getWeatherData(this.state.lat,this.state.lon)
-    
   
     }
     
@@ -68,6 +78,27 @@ class App extends React.Component {
     }
     
   }
+  getMoviesData= async(event)=>{
+    event.preventDefault();
+    let CityName=event.target.cityName.value;
+    let MovieURL=`http://localhost:3010/movies?moviename=${CityName}`;
+    try{
+    let moviesData= await axios.get(MovieURL)
+    console.log(moviesData);
+    this.setState({
+      moviesDataArray:moviesData.data,
+      Movies:true
+    })
+    this.getCityData(CityName)
+    console.log(this.state.moviesDataArray);
+  }
+  catch{
+    this.setState({
+      disPlayMoviesError:true
+      
+    })
+  }
+}
   render() {
     
 
@@ -122,12 +153,24 @@ class App extends React.Component {
       textAlign:'center',
       fontSize:'5rem'
     }
+    const rowStyle={
+      textAlign: 'center',
+      marginLeft:'auto',
+      marginRight:'auto',
+      width:'85%',
+      marginTop: '5%'
+    }
+    const space={
+      marginTop:'3%',
+      marginBottom:'',
+    }
     const dataStyle={
       borderRadius:'5px',
       backgroundColor:'#f2f2f2',
       padding:'20px',
       margin:'0 75% 0 5%'
     }
+    let i=0
     return (
       <>
         <Navbar expand="lg" style={NavStyle}>
@@ -135,7 +178,7 @@ class App extends React.Component {
             <Navbar.Brand href="#" style={NavStyle}>City Explorer</Navbar.Brand >
           </Container>
         </Navbar>
-        <form style={FormStyle} onSubmit={this.getCityData}>
+        <form style={FormStyle} onSubmit={this.getMoviesData}>
         <div style={formColorStyle}>
           <label>City Name: </label>
           <input style={borderStyle} style={inputStyle} name='cityName' placeholder='Enter city name'></input>
@@ -149,19 +192,58 @@ class App extends React.Component {
         </div>
         {this.state.mapDisplay && <Image style={MapStyling} src={`https://maps.locationiq.com/v3/staticmap?key=${process.env.REACT_APP_Key}&center=${this.state.lat},${this.state.lon}&zoom=${1-18}`} alt='map' fluid />}
         {this.state.disPlayError && <p style={errorStyle}>Sorry Error</p>}
-
+      <div style={space}>
         {this.state.Weather && this.state.weatherArray.map(item =>{
+          
+          i=i+1
           return(
             <>
+            <p style={Pstyle}>Day{i}</p>
           <p style={Pstyle}>Date:&nbsp;&nbsp;{item.date}</p>
           <p style={Pstyle}>Description:&nbsp;&nbsp;{item.description}</p>
           </>
           )
         })}
+        </div>
 
         {this.state.disPlayWeatherError&&<p style={errorStyle}>Sorry Error</p>}
-
-        
+        <Row xs={1} md={3} className="g-4" style={rowStyle}>
+        {this.state.Movies && this.state.moviesDataArray.map(item =>{
+          return(
+            <>
+            <Col>
+            <Card style={{ width: '18rem' }}>
+  <Card.Img variant="top" src={item.image_url} />
+  <Card.Body>
+    <Card.Title>Title:&nbsp;&nbsp;{item.title}</Card.Title>
+    <Card.Text>
+    Overview:&nbsp;&nbsp;{item.overview}
+    </Card.Text>
+  </Card.Body>
+  <ListGroup className="list-group-flush">
+    <ListGroupItem>Average votes:&nbsp;&nbsp;{item.average_votes}</ListGroupItem>
+    <ListGroupItem>Total votes:&nbsp;&nbsp;{item.total_votes}</ListGroupItem>
+    <ListGroupItem>Popularity:&nbsp;&nbsp;{item.popularity}</ListGroupItem>
+    <ListGroupItem>Released on:&nbsp;&nbsp;{item.released_on}</ListGroupItem>
+  </ListGroup>
+  <Card.Body>
+    <Card.Link href="#">Card Link</Card.Link>
+    <Card.Link href="#">Another Link</Card.Link>
+  </Card.Body>
+</Card>
+</Col>
+            {/* <p style={Pstyle}></p>
+            <p style={Pstyle}></p>
+            <p style={Pstyle}></p>
+            <p style={Pstyle}></p>
+            <img src= alt="Poster"/>
+            <p style={Pstyle}></p>
+            <p style={Pstyle}></p> */}
+            </>
+          )
+        })}
+        </Row>
+        {this.state.disPlayMoviesError && <p style={errorStyle}>Sorry Error</p>}
       </>
     );
   }
