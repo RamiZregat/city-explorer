@@ -42,7 +42,7 @@ class App extends React.Component {
     event.preventDefault();
     let CityName=event.target.cityName.value;
     let Key=process.env.REACT_APP_Key;
-    let URL=`https://eu1.locationiq.com/v1/search.php?key=pk.43fed3791d35ddb76aa14f749c6d3080&q=${CityName}&format=json`;
+    let URL=`https://eu1.locationiq.com/v1/search.php?key=${Key}&q=${CityName}&format=json`;
     
   
 
@@ -147,7 +147,7 @@ class App extends React.Component {
         <p style={Pstyle}>Latitude:&nbsp;&nbsp;&nbsp;&nbsp;{this.state.lat}</p>
         <p style={Pstyle}>Longitude:&nbsp;&nbsp;&nbsp;&nbsp;{this.state.lon}</p>
         </div>
-        {this.state.mapDisplay && <Image style={MapStyling} src={`https://maps.locationiq.com/v3/staticmap?key=pk.43fed3791d35ddb76aa14f749c6d3080&center=${this.state.lat},${this.state.lon}&zoom=${1-18}`} alt='map' fluid />}
+        {this.state.mapDisplay && <Image style={MapStyling} src={`https://maps.locationiq.com/v3/staticmap?key=${process.env.REACT_APP_Key}&center=${this.state.lat},${this.state.lon}&zoom=${1-18}`} alt='map' fluid />}
         {this.state.disPlayError && <p style={errorStyle}>Sorry Error</p>}
 
         {this.state.Weather && this.state.weatherArray.map(item =>{
