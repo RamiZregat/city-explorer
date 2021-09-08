@@ -28,7 +28,7 @@ class App extends React.Component {
     }
   }
   getWeatherData=async(lat,lon)=>{
-    let WeatherURL=`http://localhost:3010/weather?lat=${lat}&lon=${lon}`;
+    let WeatherURL=`https://rami-city-explorer.herokuapp.com/weather?lat=${lat}&lon=${lon}`;
 
     try{
       
@@ -81,7 +81,7 @@ class App extends React.Component {
   getMoviesData= async(event)=>{
     event.preventDefault();
     let CityName=event.target.cityName.value;
-    let MovieURL=`http://localhost:3010/movies?moviename=${CityName}`;
+    let MovieURL=`https://rami-city-explorer.herokuapp.com/movies?moviename=${CityName}`;
     try{
     let moviesData= await axios.get(MovieURL)
     console.log(moviesData);
@@ -170,6 +170,11 @@ class App extends React.Component {
       padding:'20px',
       margin:'0 75% 0 5%'
     }
+    const weatherDataStyle={
+      borderRadius:'5px',
+      backgroundColor:'#f2f2f2',
+      margin:'0 15% 0 15%'
+    }
     let i=0
     return (
       <>
@@ -192,18 +197,22 @@ class App extends React.Component {
         </div>
         {this.state.mapDisplay && <Image style={MapStyling} src={`https://maps.locationiq.com/v3/staticmap?key=${process.env.REACT_APP_Key}&center=${this.state.lat},${this.state.lon}&zoom=${1-18}`} alt='map' fluid />}
         {this.state.disPlayError && <p style={errorStyle}>Sorry Error</p>}
-      <div style={space}>
+      <div style={space} style={weatherDataStyle}>
+      <Row xs={1} md={3} className="g-4" style={rowStyle}>
         {this.state.Weather && this.state.weatherArray.map(item =>{
           
           i=i+1
           return(
-            <>
-            <p style={Pstyle}>Day{i}</p>
+          <>
+          <Col>
+          <p style={Pstyle}>Day{i}</p>
           <p style={Pstyle}>Date:&nbsp;&nbsp;{item.date}</p>
           <p style={Pstyle}>Description:&nbsp;&nbsp;{item.description}</p>
+          </Col>
           </>
           )
         })}
+        </Row>
         </div>
 
         {this.state.disPlayWeatherError&&<p style={errorStyle}>Sorry Error</p>}
