@@ -235,10 +235,6 @@ class App extends React.Component {
     <ListGroupItem>Popularity:&nbsp;&nbsp;{item.popularity}</ListGroupItem>
     <ListGroupItem>Released on:&nbsp;&nbsp;{item.released_on}</ListGroupItem>
   </ListGroup>
-  <Card.Body>
-    <Card.Link href="#">Card Link</Card.Link>
-    <Card.Link href="#">Another Link</Card.Link>
-  </Card.Body>
 </Card>
 </Col>
             {/* <p style={Pstyle}></p>
